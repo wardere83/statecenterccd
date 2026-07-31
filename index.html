@@ -3067,12 +3067,12 @@ function saveBmrState(state) {
   try { localStorage.setItem(BMR_STORE, JSON.stringify(state)); } catch(e) {}
 }
 
-/* ── Factual reference data — State Center CCD LIFT Mentor Match baseline budget.
+/* ── Factual reference data — State Center CCD FIT 2.0 baseline budget.
    Seeded as the starting draft on first load so the district sees its awarded
    budget in place and can edit any field to request a modification. Never
    overwrites an existing (edited) draft; the draft then persists in
    localStorage until a confirmed submission. Amounts mirror the approved
-   LIFT Mentor Match budget: Year 1 = FY2025-26 + FY2026-27, Year 2 = FY2027-28. ── */
+   FIT 2.0 budget: Year 1 = FY2025-26 + FY2026-27, Year 2 = FY2027-28. ── */
 const BMR_SEED = {
   meta: {
     district: 'State Center Community College District',
