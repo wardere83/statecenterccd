@@ -140,6 +140,10 @@
     .content { flex:1; padding:28px; max-width:var(--content-max); width:100%; overflow-y:auto; overflow-x:hidden; }
     .section { display:none; }
     .section.active { display:block; }
+    .content:has(#section-tutorial.active) { max-width:none; }
+    #section-tutorial video { display:block; width:100%; max-height:calc(100dvh - 255px); background:#062b43; aspect-ratio:16/9; }
+    .tutorial-actions { display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; padding:16px 20px; }
+    .tutorial-actions a { text-decoration:none; }
     .page-header { margin-bottom:24px; }
     .page-header h2 { font-family:var(--font-display); font-size:26px; font-weight:600; color:var(--ccc-dark-blue); line-height:1.2; margin-bottom:4px; }
     [data-theme="dark"] .page-header h2 { color:var(--accent-light); }
@@ -990,6 +994,8 @@
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
       Forms
     </button>
+    <div class="sidebar-section-label">Dashboard Tutorial</div>
+    <button class="nav-item" onclick="showSection('tutorial',this)" aria-controls="section-tutorial"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="m10 8 6 4-6 4z"/></svg><span>SCCCD's PM Dashboard Tutorial Video</span></button>
     </div><!-- /sidebar-nav-scroll -->
     <div class="sidebar-footer">
       <div class="sidebar-footer-label">Administered by</div>
@@ -1660,6 +1666,11 @@
           <div id="timeline-rows"></div>
         </div>
       </div>
+
+      <section id="section-tutorial" class="section" aria-labelledby="tutorial-heading">
+        <div class="page-header"><h2 id="tutorial-heading">SCCCD's PM Dashboard Tutorial Video</h2><p>A brief tour of your project management dashboard. Created by Bulle Consulting.</p></div>
+        <div id="tutorial-media" class="card"><div class="card-body"><p>The updated tutorial video will appear here shortly.</p></div></div>
+      </section>
 
       <!-- CONTACTS -->
       <div id="section-contacts" class="section">
