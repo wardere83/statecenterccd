@@ -1,0 +1,88 @@
+Input #0, mov,mp4,m4a,3gp,3g2,mj2, from '/home/runner/work/statecenterccd/statecenterccd/assets/tutorial/SCCCD_EEO_Dashboard_Training_4K.mp4':
+  Metadata:
+    major_brand     : isom
+    minor_version   : 512
+    compatible_brands: isomiso2avc1mp41
+    title           : SCCCD PM Dashboard Tutorial Video
+    artist          : Bulle Consulting
+    encoder         : Lavf60.16.100
+  Duration: 00:02:42.75, start: 0.000000, bitrate: 1433 kb/s
+  Stream #0:0[0x1](und): Video: h264 (Constrained Baseline) (avc1 / 0x31637661), yuv420p(progressive), 3840x2160, 1301 kb/s, 20 fps, 20 tbr, 10240 tbn (default)
+    Metadata:
+      handler_name    : VideoHandler
+      vendor_id       : [0][0][0][0]
+      encoder         : Lavc60.31.102 libx264
+  Stream #0:1[0x2](und): Audio: aac (LC) (mp4a / 0x6134706D), 44100 Hz, mono, fltp, 128 kb/s (default)
+    Metadata:
+      handler_name    : SoundHandler
+      vendor_id       : [0][0][0][0]
+  Stream #0:2[0x3](und): Subtitle: mov_text (tx3g / 0x67337874), 0 kb/s (default)
+    Metadata:
+      handler_name    : SubtitleHandler
+Stream mapping:
+  Stream #0:1 -> #0:0 (aac (native) -> pcm_s16le (native))
+Press [q] to stop, [?] for help
+Output #0, null, to 'pipe:':
+  Metadata:
+    major_brand     : isom
+    minor_version   : 512
+    compatible_brands: isomiso2avc1mp41
+    title           : SCCCD PM Dashboard Tutorial Video
+    artist          : Bulle Consulting
+    encoder         : Lavf60.16.100
+  Stream #0:0(und): Audio: pcm_s16le, 44100 Hz, mono, s16, 705 kb/s (default)
+    Metadata:
+      handler_name    : SoundHandler
+      vendor_id       : [0][0][0][0]
+      encoder         : Lavc60.31.102 pcm_s16le
+[out#0/null @ 0x55f0ceccf8c0] video:0kB audio:14050kB subtitle:0kB other streams:0kB global headers:0kB muxing overhead: unknown
+size=N/A time=00:02:42.70 bitrate=N/A speed= 259x    
+[Parsed_astats_1 @ 0x55f0ced307c0] Channel: 1
+[Parsed_astats_1 @ 0x55f0ced307c0] DC offset: -0.000006
+[Parsed_astats_1 @ 0x55f0ced307c0] Min level: -0.852550
+[Parsed_astats_1 @ 0x55f0ced307c0] Max level: 0.870678
+[Parsed_astats_1 @ 0x55f0ced307c0] Min difference: 0.000000
+[Parsed_astats_1 @ 0x55f0ced307c0] Max difference: 0.989974
+[Parsed_astats_1 @ 0x55f0ced307c0] Mean difference: 0.010318
+[Parsed_astats_1 @ 0x55f0ced307c0] RMS difference: 0.030819
+[Parsed_astats_1 @ 0x55f0ced307c0] Peak level dB: -1.202853
+[Parsed_astats_1 @ 0x55f0ced307c0] RMS level dB: -17.800666
+[Parsed_astats_1 @ 0x55f0ced307c0] RMS peak dB: -9.301111
+[Parsed_astats_1 @ 0x55f0ced307c0] RMS trough dB: -inf
+[Parsed_astats_1 @ 0x55f0ced307c0] Crest factor: 6.759128
+[Parsed_astats_1 @ 0x55f0ced307c0] Flat factor: 0.000000
+[Parsed_astats_1 @ 0x55f0ced307c0] Peak count: 2
+[Parsed_astats_1 @ 0x55f0ced307c0] Abs Peak count: 1
+[Parsed_astats_1 @ 0x55f0ced307c0] Noise floor dB: -inf
+[Parsed_astats_1 @ 0x55f0ced307c0] Noise floor count: 1146032
+[Parsed_astats_1 @ 0x55f0ced307c0] Entropy: 0.709609
+[Parsed_astats_1 @ 0x55f0ced307c0] Bit depth: 31/32/32/32
+[Parsed_astats_1 @ 0x55f0ced307c0] Dynamic range: 298.217532
+[Parsed_astats_1 @ 0x55f0ced307c0] Zero crossings: 405359
+[Parsed_astats_1 @ 0x55f0ced307c0] Zero crossings rate: 0.056350
+[Parsed_astats_1 @ 0x55f0ced307c0] Number of NaNs: 0
+[Parsed_astats_1 @ 0x55f0ced307c0] Number of Infs: 0
+[Parsed_astats_1 @ 0x55f0ced307c0] Number of denormals: 0
+[Parsed_astats_1 @ 0x55f0ced307c0] Overall
+[Parsed_astats_1 @ 0x55f0ced307c0] DC offset: -0.000006
+[Parsed_astats_1 @ 0x55f0ced307c0] Min level: -0.852550
+[Parsed_astats_1 @ 0x55f0ced307c0] Max level: 0.870678
+[Parsed_astats_1 @ 0x55f0ced307c0] Min difference: 0.000000
+[Parsed_astats_1 @ 0x55f0ced307c0] Max difference: 0.989974
+[Parsed_astats_1 @ 0x55f0ced307c0] Mean difference: 0.010318
+[Parsed_astats_1 @ 0x55f0ced307c0] RMS difference: 0.030819
+[Parsed_astats_1 @ 0x55f0ced307c0] Peak level dB: -1.202853
+[Parsed_astats_1 @ 0x55f0ced307c0] RMS level dB: -17.800666
+[Parsed_astats_1 @ 0x55f0ced307c0] RMS peak dB: -9.301111
+[Parsed_astats_1 @ 0x55f0ced307c0] RMS trough dB: -inf
+[Parsed_astats_1 @ 0x55f0ced307c0] Flat factor: 0.000000
+[Parsed_astats_1 @ 0x55f0ced307c0] Peak count: 2.000000
+[Parsed_astats_1 @ 0x55f0ced307c0] Abs Peak count: 1.000000
+[Parsed_astats_1 @ 0x55f0ced307c0] Noise floor dB: -inf
+[Parsed_astats_1 @ 0x55f0ced307c0] Noise floor count: 1146032.000000
+[Parsed_astats_1 @ 0x55f0ced307c0] Entropy: 0.709609
+[Parsed_astats_1 @ 0x55f0ced307c0] Bit depth: 31/32/32/32
+[Parsed_astats_1 @ 0x55f0ced307c0] Number of samples: 7193600
+[Parsed_astats_1 @ 0x55f0ced307c0] Number of NaNs: 0.000000
+[Parsed_astats_1 @ 0x55f0ced307c0] Number of Infs: 0.000000
+[Parsed_astats_1 @ 0x55f0ced307c0] Number of denormals: 0.000000

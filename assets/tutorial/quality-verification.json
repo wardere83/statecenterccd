@@ -1,7 +1,7 @@
 {
   "video": "SCCCD_EEO_Dashboard_Training_4K.mp4",
   "resolution": "3840 x 2160",
-  "duration_seconds": 162.722993,
+  "duration_seconds": 162.75,
   "native_dashboard_renders": true,
   "repaired_audio_stream_preserved": true,
   "original_narrator_retained": true,
@@ -16,5 +16,9 @@
   "browser_playback_verified": true,
   "pause_when_leaving_verified": true,
   "mobile_overflow_test_passed": true,
-  "sha256": "e41764bc1226994c7d6c8ff6a19fe8ad40672167d79b386027375ef20124505c"
+  "sha256": "f0e459d301770d41c82550e80b2222698861f5211c382412d0a3f4730590a44f",
+  "video_duration_seconds": 162.75,
+  "audio_duration_seconds": 162.722993,
+  "video_covers_complete_narration": true,
+  "audio_timestamp_discontinuities": 0
 }
