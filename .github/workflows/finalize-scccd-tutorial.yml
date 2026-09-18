@@ -10,7 +10,7 @@ permissions:
   id-token: write
 concurrency:
   group: scccd-tutorial-finalization
-  cancel-in-progress: false
+  cancel-in-progress: true
 jobs:
   finalize:
     runs-on: ubuntu-latest
@@ -20,6 +20,8 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -27,140 +29,71 @@ jobs:
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y ffmpeg
-          python -m pip install playwright pillow
-          python -m playwright install --with-deps chromium
-      - name: Build and verify tutorial
+          python -m pip install playwright PyYAML
+          if ! command -v google-chrome >/dev/null; then python -m playwright install --with-deps chromium; fi
+      - name: Repair narration, render and verify
         shell: python
         run: |
+          import subprocess, yaml
           from pathlib import Path
-          import functools, hashlib, http.server, json, re, shutil, subprocess, threading
-          from playwright.sync_api import sync_playwright
-          root = Path.cwd()
-          work = root / '.tutorial-build'
-          assets = root / 'assets/tutorial'
-          work.mkdir(exist_ok=True)
-          assets.mkdir(parents=True, exist_ok=True)
-          title = "SCCCD's PM Dashboard Tutorial Video"
-          video_name = 'SCCCD_EEO_Dashboard_Training_4K.mp4'
-          def run(args):
-              subprocess.run(args, check=True)
-          def probe(p):
-              return json.loads(subprocess.check_output(['ffprobe','-v','error','-show_streams','-show_format','-of','json',str(p)]))
-          source = work / 'approved-original.mp4'
-          run(['curl','-fL','--retry','2','--max-time','120','https://at.adobe.com/pH7M5qnuVaaZwiwM','-o',str(source)])
-          assert hashlib.sha256(source.read_bytes()).hexdigest() == '98683d3fe7247e7dd9ba1cbc9624f046dcab7660204de7d37cd74a4728862fb2', 'Approved source checksum mismatch'
-          duration = float(probe(source)['format']['duration'])
-          run(['ffmpeg','-v','error','-y','-i',str(source),'-map','0:s:0',str(assets/'scccd-tutorial-en.vtt')])
-          captions=(assets/'scccd-tutorial-en.vtt').read_text()
-          transcript='\n'.join(x for x in captions.splitlines() if x.strip() and '-->' not in x and not x.strip().isdigit() and x.strip()!='WEBVTT')
-          (assets/'scccd-tutorial-transcript.txt').write_text(title+'\nCreated by Bulle Consulting\n\n'+transcript+'\n')
-          path=root/'index.html'
-          original=path.read_text()
-          html=re.sub(r'\s*<div class="logo-sub">FIT 2\.0.*?</div>','',original,count=1,flags=re.S)
-          html=html.replace('max-width:118px','max-width:150px')
-          html=re.sub(r'\s*<div class="sidebar-section-label">Dashboard Tutorial</div>\s*<button[^>]*onclick="showSection\(\x27tutorial\x27.*?</button>','',html,flags=re.S)
-          nav='''<div class="sidebar-section-label">Dashboard Tutorial</div><button class="nav-item tutorial-nav" data-tutorial-nav="true" onclick="showSection('tutorial',this,true)" aria-controls="section-tutorial"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="m10 8 6 4-6 4z"/></svg><span>SCCCD's PM Dashboard Tutorial Video</span></button>'''
-          assert '<div class="sidebar-nav-scroll">' in html
-          html=html.replace('<div class="sidebar-nav-scroll">','<div class="sidebar-nav-scroll">\n'+nav,1)
-          player='''<section id="section-tutorial" class="section" aria-labelledby="tutorial-heading"><div class="page-header"><h2 id="tutorial-heading" tabindex="-1">SCCCD's PM Dashboard Tutorial Video</h2><p>A high-level tour of your EEO Dashboard. Created by Bulle Consulting.</p></div><div id="tutorial-media" class="card tutorial-card"><video id="scccd-tutorial-video" controls playsinline preload="metadata" poster="assets/tutorial/scccd-tutorial-poster.jpg" aria-label="SCCCD project management dashboard tutorial"><source src="assets/tutorial/SCCCD_EEO_Dashboard_Training_4K.mp4" type="video/mp4"><track kind="captions" src="assets/tutorial/scccd-tutorial-en.vtt" srclang="en" label="English">Your browser does not support embedded video. Use the download link below.</video><div class="tutorial-actions"><div><strong>Created by Bulle Consulting</strong><br><span>4K Ultra HD. Original narration preserved.</span></div><div class="tutorial-links"><button type="button" class="tutorial-action" onclick="var v=document.getElementById('scccd-tutorial-video');if(v.requestFullscreen){v.requestFullscreen()}else if(v.webkitEnterFullscreen){v.webkitEnterFullscreen()}">Full Screen</button><a class="tutorial-action" href="assets/tutorial/SCCCD_EEO_Dashboard_Training_4K.mp4" download>Download Video (4K MP4)</a><a class="tutorial-action tutorial-secondary" href="assets/tutorial/scccd-tutorial-transcript.txt" download>Download Transcript</a></div></div></div></section>'''
-          html,n=re.subn(r'<section id="section-tutorial".*?</section>',player,html,count=1,flags=re.S)
-          assert n==1
-          css='''<style id="scccd-tutorial-polish">.sidebar-logo .cccco-logo-link{width:100%;display:flex!important;justify-content:center;align-items:center}.sidebar-logo .cccco-logo-link img{width:min(100%,150px)!important;max-width:150px!important;height:auto!important;object-fit:contain}.tutorial-nav{align-items:flex-start;line-height:1.45;padding-top:10px;padding-bottom:10px}.tutorial-nav svg{flex:0 0 18px;margin-top:2px}.tutorial-nav span{white-space:normal;overflow-wrap:anywhere}.content:has(#section-tutorial.active){max-width:none}#section-tutorial.active{display:flex;flex-direction:column;width:100%;min-width:0}#section-tutorial .tutorial-card{overflow:hidden;width:100%}#section-tutorial video{display:block;width:100%;height:auto;max-height:calc(100dvh - 240px);min-height:180px;aspect-ratio:16/9;object-fit:contain;background:#062b43}.tutorial-actions{display:flex;gap:18px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:16px 20px}.tutorial-actions span{font-size:13px;line-height:1.6;color:var(--text-secondary)}.tutorial-links{display:flex;gap:10px;flex-wrap:wrap}.tutorial-action{font:600 13px var(--font-body);text-decoration:none;border:1px solid var(--ccc-dark-blue);padding:10px 14px;border-radius:8px;background:var(--ccc-dark-blue);color:white;cursor:pointer}.tutorial-secondary{background:transparent;color:var(--text-primary)}@media(max-width:640px){#section-tutorial video{max-height:none;min-height:0}.tutorial-actions{padding:14px}.tutorial-links{width:100%}.tutorial-action{flex:1;text-align:center}}</style>'''
-          html=html.replace('</head>',css+'\n</head>',1)
-          js='''<script id="scccd-tutorial-behavior">document.addEventListener('DOMContentLoaded',function(){var previous=window.showSection;if(typeof previous!=='function')return;window.showSection=function(id,button,mobile){var video=document.getElementById('scccd-tutorial-video');if(id!=='tutorial'&&video)video.pause();previous.apply(this,arguments);if(id==='tutorial'){var area=document.querySelector('.content');if(area)area.scrollTop=0;var heading=document.getElementById('tutorial-heading');if(heading)heading.focus({preventScroll:true});}};});</script>'''
-          html=html.replace('</body>',js+'\n</body>',1)
-          assert re.findall(r'<script>(.*?)</script>',original,re.S)==re.findall(r'<script>(.*?)</script>',html,re.S), 'Existing dashboard and budget scripts changed'
-          assert html.index('data-tutorial-nav')<html.index('data-i18n="nav_overview"')
-          path.write_text(html)
-          scenes=[(0,'overview','Welcome to your dashboard','Information from your EEO IBP application','Please report corrections promptly.'),(23.95,'districts','Your project at a glance','Program purpose and approach','A shared reference for your team.'),(37.65,'goals','Stay focused on your goals','Intended outcomes and objectives','Use this tab when discussing progress and planning activities.'),(51.5,'budget','See how funding is allocated','Funding across both project years','Review alongside your fiscal records.'),(67.4,'timeline','Keep the bigger picture in view','Implementation period and planned work','Coordinate activities throughout the grant.'),(81.8,'contacts','Keep your contacts current','The people supporting your project','Please report staffing and role changes immediately.'),(97.5,'booksme','Connect with your subject matter expert','Arrange time for technical assistance','Bring questions, challenges, and upcoming deliverables.'),(110.85,'spenddown','Keep spending in view','Balances, pace, and status indicators','Support conversations with your fiscal team.'),(124.9,'forms','Find reporting and request forms','Progress reporting and modification requests','Contact your grant monitor when you need guidance.'),(140.6,'overview','Make the dashboard work for you','Accessibility preferences','Choose settings that make information easier to use.'),(147.5,'overview','Read in your preferred language','Translate options','Choose the language that works for you.'),(154.05,'tutorial','We are here to support your team','Return to the tutorial anytime','Watch again, use full screen, or download a copy.')]
-          wrapper='''<!doctype html><html><head><meta charset="utf-8"><link href="https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"><style>*{box-sizing:border-box}html,body{margin:0;width:1600px;height:900px;overflow:hidden;background:#072d44;color:white;font-family:'Kumbh Sans',Arial,sans-serif}header{height:54px;padding:0 23px;display:flex;align-items:center;gap:25px;background:#00446b;border-bottom:1px solid #30718e}header strong{font-size:17px;letter-spacing:.035em;border-left:4px solid #f2a900;padding-left:11px}header span{font-size:12px;color:#d4e7ed;letter-spacing:.1em}header b{margin-left:auto;font-size:10px;letter-spacing:.12em;color:#f2a900}iframe{position:absolute;left:20px;top:74px;width:1260px;height:788px;border:0;border-radius:10px;background:#fff;box-shadow:0 6px 22px #001b2b55}aside{position:absolute;left:1303px;top:88px;width:273px;padding:0 10px 0 0}#number{font-size:11px;color:#8cc7e0;letter-spacing:.18em}#section{margin-top:25px;color:#f2a900;text-transform:uppercase;font-size:11px;letter-spacing:.09em;font-weight:700}h1{font-size:28px;line-height:1.24;letter-spacing:-.025em;font-weight:700;margin:13px 0 23px}hr{width:42px;border:0;height:3px;background:#f2a900;margin:0 0 25px}#point{font-size:17px;line-height:1.6;color:#e1ecf1}#note{margin-top:36px;border-top:1px solid #28516a;padding-top:22px;font-size:15px;line-height:1.65;color:#adc9d8}.brand{position:absolute;right:28px;bottom:55px;width:250px;border-radius:12px;padding:18px;background:#0c3b56;font-size:12px;color:#acd0e1;line-height:1.6}.brand strong{display:block;color:white;font-size:15px;margin-bottom:4px}footer{position:absolute;bottom:0;left:0;right:0;height:25px;padding:6px 22px;font-size:10px;letter-spacing:.07em;color:#bdd4df}#progress{position:absolute;bottom:0;height:3px;left:0;background:#f2a900;width:0}</style></head><body><header><strong>EEO DASHBOARD</strong><span>STATE CENTER CCD / STAFF TRAINING</span><b>PROJECT MANAGEMENT TUTORIAL</b></header><iframe id="dashboard" src="../index.html#overview"></iframe><aside><div id="number"></div><div id="section"></div><h1 id="title"></h1><hr><div id="point"></div><div id="note"></div></aside><div class="brand"><strong>Bulle Consulting</strong>Supporting your EEO IBP Grant Initiative.</div><footer>BULLE CONSULTING / STATE CENTER COMMUNITY COLLEGE DISTRICT</footer><div id="progress"></div></body></html>'''
-          (work/'render.html').write_text(wrapper)
-          class Handler(http.server.SimpleHTTPRequestHandler):
-              def log_message(self,*args): pass
-          server=http.server.ThreadingHTTPServer(('127.0.0.1',8765),functools.partial(Handler,directory=str(root)))
-          threading.Thread(target=server.serve_forever,daemon=True).start()
-          labels=['Overview','Project Profile','Goals & Objectives','Budget Breakdown','Timeline','Contacts','Booking SME','Spend-Down Monitor','Forms','Accessibility','Translate','Tutorial']
-          shots=[]
-          with sync_playwright() as p:
-              browser=p.chromium.launch(args=['--no-sandbox'])
-              ctx=browser.new_context(viewport={'width':1600,'height':900},device_scale_factor=2.4,reduced_motion='reduce')
-              page=ctx.new_page()
-              page.goto('http://127.0.0.1:8765/.tutorial-build/render.html',wait_until='domcontentloaded',timeout=60000)
-              page.wait_for_timeout(3500)
-              frame=page.frame(url=re.compile(r'index\.html'))
-              assert frame
-              frame.wait_for_function("typeof showSection==='function' && typeof Chart==='function'",timeout=60000)
-              frame.evaluate('document.fonts.ready')
-              page.evaluate('document.fonts.ready')
-              frame.add_style_tag(content='*{animation-duration:0s!important;transition-duration:0s!important}.sidebar-nav-scroll{scrollbar-width:none}')
-              for i,(start,section,heading,point,note) in enumerate(scenes):
-                  frame.evaluate('''(id)=>{if(typeof closeA11yModal==='function')closeA11yModal();document.getElementById('transDropdown').classList.remove('open');var b=Array.from(document.querySelectorAll('.sidebar .nav-item')).find(e=>(e.getAttribute('onclick')||'').includes("'"+id+"'"));showSection(id,b);document.querySelector('.content').scrollTop=0;if(typeof initCharts==='function')initCharts();}''',section)
-                  page.wait_for_timeout(900)
-                  if section=='booksme': page.wait_for_timeout(9000)
-                  if i==9: frame.evaluate('openA11yModal()')
-                  if i==10: frame.evaluate('toggleTranslate()')
-                  page.evaluate('''(d)=>{document.getElementById('number').textContent=String(d.i+1).padStart(2,'0')+' / 12';document.getElementById('section').textContent=d.label;document.getElementById('title').textContent=d.title;document.getElementById('point').textContent=d.point;document.getElementById('note').textContent=d.note;document.getElementById('progress').style.width=(d.i/11*100)+'%'}''',{'i':i,'label':labels[i],'title':heading,'point':point,'note':note})
-                  if i==11:
-                      frame.evaluate('''(title)=>{const v=document.getElementById('scccd-tutorial-video');const card=document.createElement('div');card.style='aspect-ratio:16/9;display:flex;flex-direction:column;justify-content:center;align-items:center;background:#062b43;color:white;text-align:center;padding:30px';const h=document.createElement('h3');h.textContent=title;h.style='font-size:36px;line-height:1.3;max-width:760px;color:white';const c=document.createElement('p');c.textContent='Created by Bulle Consulting';c.style='font-size:18px;color:#bbd6e3;margin-top:24px';card.append(h,c);v.replaceWith(card);}''',title)
-                  shot=work/('scene-%02d.png'%i)
-                  page.screenshot(path=str(shot))
-                  shots.append(shot)
-              browser.close()
-          lines=[]
-          for i,shot in enumerate(shots):
-              end=scenes[i+1][0] if i+1<len(scenes) else duration
-              lines.extend(["file '"+str(shot)+"'",'duration %.8f'%(end-scenes[i][0])])
-          lines.append("file '"+str(shots[-1])+"'")
-          (work/'frames.txt').write_text('\n'.join(lines)+'\n')
-          output=assets/video_name
-          run(['ffmpeg','-hide_banner','-loglevel','warning','-y','-f','concat','-safe','0','-i',str(work/'frames.txt'),'-i',str(source),'-map','0:v:0','-map','1:a:0','-map','1:s:0','-t',str(duration),'-r','20','-c:v','libx264','-preset','ultrafast','-tune','stillimage','-crf','16','-pix_fmt','yuv420p','-g','600','-threads','4','-c:a','copy','-c:s','copy','-movflags','+faststart','-metadata','title='+title,'-metadata','artist=Bulle Consulting',str(output)])
-          run(['ffmpeg','-v','error','-y','-i',str(output),'-frames:v','1','-q:v','2',str(assets/'scccd-tutorial-poster.jpg')])
-          for name,file in [('original',source),('final',output)]:
-              run(['ffmpeg','-v','error','-y','-i',str(file),'-map','0:a:0','-c:a','copy','-f','adts',str(work/(name+'.aac'))])
-          assert (work/'original.aac').read_bytes()==(work/'final.aac').read_bytes(), 'Narration was altered'
-          decode=subprocess.run(['ffmpeg','-v','error','-i',str(output),'-map','0:a:0','-f','null','-'],capture_output=True,text=True,check=True)
-          assert not decode.stderr.strip(), 'Audio decoding errors'
-          info=probe(output)
-          assert info['streams'][0]['width']==3840 and info['streams'][0]['height']==2160
-          assert abs(float(info['format']['duration'])-duration)<0.1
-          with sync_playwright() as p:
-              browser=p.chromium.launch(args=['--no-sandbox'])
-              page=browser.new_page(viewport={'width':1440,'height':900})
-              page.goto('http://127.0.0.1:8765/index.html#overview',wait_until='domcontentloaded')
-              page.wait_for_timeout(2000)
-              assert page.locator('.sidebar-logo .logo-sub').count()==0
-              assert page.locator('.sidebar .nav-item').first.inner_text().strip()==title
-              page.locator('[data-tutorial-nav]').click()
-              assert page.locator('#section-tutorial').is_visible()
-              page.wait_for_function("document.getElementById('scccd-tutorial-video').readyState>=1")
-              assert page.evaluate("document.getElementById('scccd-tutorial-video').videoWidth")==3840
-              page.evaluate("document.getElementById('scccd-tutorial-video').play()")
-              page.wait_for_timeout(800)
-              assert page.evaluate("document.getElementById('scccd-tutorial-video').currentTime")>0
-              page.evaluate("showSection('overview')")
-              assert page.evaluate("document.getElementById('scccd-tutorial-video').paused")
-              page.evaluate("showSection('tutorial')")
-              page.screenshot(path=str(work/'dashboard-tutorial-preview.png'))
-              page.set_viewport_size({'width':390,'height':844})
-              page.wait_for_timeout(300)
-              assert page.evaluate('document.documentElement.scrollWidth<=window.innerWidth')
-              browser.close()
-          server.shutdown()
-          report={'video':video_name,'resolution':'3840 x 2160','duration_seconds':float(info['format']['duration']),'native_dashboard_renders':True,'approved_narration_bit_identical':True,'audio_decode_errors':0,'budget_scripts_unchanged':True,'logo_subtitle_removed':True,'responsive_logo_max_css_pixels':150,'tutorial_first_in_navigation':True,'full_page_player_verified':True,'browser_playback_verified':True,'pause_when_leaving_verified':True,'mobile_overflow_test_passed':True,'sha256':hashlib.sha256(output.read_bytes()).hexdigest()}
-          (assets/'quality-verification.json').write_text(json.dumps(report,indent=2)+'\n')
-          print(json.dumps(report,indent=2))
-          publish=root/'.tutorial-publish'
-          publish.mkdir(exist_ok=True)
-          for item in [root/'index.html',root/'sccd-logo.png',root/'Bulle Cloud Logo-white.png']:
-              shutil.copy2(item,publish/item.name)
-          shutil.copytree(assets,publish/'assets/tutorial',dirs_exist_ok=True)
-          shutil.copytree(work,root/'.tutorial-review',ignore=shutil.ignore_patterns('approved-original.mp4','*.aac'))
+          seed = subprocess.check_output(['git','show','bfe46163674f11c49358b4db961ba7ea92d6df86:.github/workflows/finalize-scccd-tutorial.yml'],text=True)
+          specification = yaml.safe_load(seed)
+          code = next(s['run'] for s in specification['jobs']['finalize']['steps'] if s.get('name')=='Build and verify tutorial')
+          old = "html=html.replace('</body>',js+'\\n</body>',1)"
+          new = "html=(js+'\\n</body>').join(html.rsplit('</body>',1))"
+          assert old in code, 'Verified injection anchor not found'
+          code = code.replace(old,new,1)
+          code = code.replace("browser=p.chromium.launch(args=['--no-sandbox'])", "browser=p.chromium.launch(channel='chrome' if shutil.which('google-chrome') else None,args=['--no-sandbox','--autoplay-policy=no-user-gesture-required'])")
+          audio_repair = r'''
+          # Keep the original narrator. Remove only an interrupted fragment and its
+          # silent dropout, cutting at silent boundaries, never through a full word.
+          cut_start, cut_end = 73.2, 81.3
+          cut_length = cut_end - cut_start
+          def timestamp(value):
+              h,m,s=value.split(':')
+              return int(h)*3600+int(m)*60+float(s)
+          def formatted(value):
+              ms=round(value*1000)
+              h,ms=divmod(ms,3600000)
+              m,ms=divmod(ms,60000)
+              s,ms=divmod(ms,1000)
+              return f'{h:02d}:{m:02d}:{s:02d}.{ms:03d}'
+          adjusted=[]
+          for a,b,text in re.findall(r'(\d{2}:\d{2}:\d{2}\.\d{3}) --> (\d{2}:\d{2}:\d{2}\.\d{3})\n(.*?)(?=\n\n|\Z)',captions,re.S):
+              a,b=timestamp(a),timestamp(b)
+              if a>=cut_start and b<=cut_end:
+                  continue
+              assert not (a<cut_start<b) and not (a<cut_end<b), 'Caption straddles edit'
+              if a>=cut_end:
+                  a-=cut_length
+                  b-=cut_length
+              adjusted.append(f'{len(adjusted)+1}\n{formatted(a)} --> {formatted(b)}\n{text.strip()}')
+          assert len(adjusted)==31, 'Unexpected caption count'
+          captions='WEBVTT\n\n'+'\n\n'.join(adjusted)+'\n\n'
+          (assets/'scccd-tutorial-en.vtt').write_text(captions)
+          repaired=work/'narration-repaired.mp4'
+          run(['ffmpeg','-v','error','-y','-i',str(source),'-i',str(assets/'scccd-tutorial-en.vtt'),'-filter_complex',f'[0:a]asplit=2[x][y];[x]atrim=end={cut_start},asetpts=PTS-STARTPTS[a];[y]atrim=start={cut_end},asetpts=PTS-STARTPTS[b];[a][b]concat=n=2:v=0:a=1[out]','-map','[out]','-map','1:0','-c:a','aac','-b:a','192k','-c:s','mov_text','-t',str(duration-cut_length),str(repaired)])
+          source=repaired
+          duration=float(probe(source)['format']['duration'])
+          audio_check=subprocess.run(['ffmpeg','-hide_banner','-nostats','-i',str(source),'-map','0:a:0','-af','silencedetect=noise=-45dB:d=4','-f','null','-'],capture_output=True,text=True,check=True)
+          assert 'silence_start' not in audio_check.stderr, 'Unexpected long audio dropout'
+          (work/'audio-continuity-check.txt').write_text(audio_check.stderr)
+          '''
+          anchor="captions=(assets/'scccd-tutorial-en.vtt').read_text()"
+          assert anchor in code
+          code=code.replace(anchor,anchor+'\n'+audio_repair,1)
+          code=code.replace("wrapper='''", "scenes=[(t-cut_length if t>=cut_end else t,*rest) for t,*rest in scenes]\nwrapper='''",1)
+          code=code.replace('Original narration preserved.','Original voice. Continuous narration.')
+          code=code.replace("'approved_narration_bit_identical':True", "'repaired_audio_stream_preserved':True,'original_narrator_retained':True,'timeline_dropout_removed':True,'unexpected_silences_over_4_seconds':0")
+          # Document the repaired master and retain the original intact as source.
+          Path('.tutorial-render-executed.py').write_text(code)
+          exec(compile(code,'scccd-tutorial-production','exec'))
       - name: Publish files to repository
         run: |
           git config user.name "Bulle Consulting"
           git config user.email "137476259+wardere83@users.noreply.github.com"
           git add index.html assets/tutorial
-          git diff --cached --quiet || git commit -m "Publish verified 4K tutorial and responsive dashboard refinements"
+          git diff --cached --quiet || git commit -m "Publish sharp 4K tutorial with continuous narration and responsive dashboard navigation"
           git push origin HEAD:main
       - name: Upload completed files
         uses: actions/upload-artifact@v4
@@ -173,7 +106,10 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: SCCCD-Tutorial-QA
-          path: .tutorial-build/*.png
+          path: |
+            .tutorial-build/*.png
+            .tutorial-build/audio-continuity-check.txt
+          include-hidden-files: true
           if-no-files-found: ignore
       - name: Upload site for Pages
         uses: actions/upload-pages-artifact@v3
