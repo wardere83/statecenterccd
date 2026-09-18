@@ -28,8 +28,8 @@ jobs:
       - name: Install rendering tools
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y ffmpeg
-          python -m pip install playwright PyYAML
+          sudo apt-get install -y -qq ffmpeg >/tmp/scccd-install.log 2>&1 || { tail -40 /tmp/scccd-install.log; exit 1; }
+          python -m pip install -q playwright PyYAML
           if ! command -v google-chrome >/dev/null; then python -m playwright install --with-deps chromium; fi
       - name: Repair narration, render and verify
         shell: python
@@ -45,12 +45,15 @@ jobs:
           code = code.replace(old,new,1)
           code = code.replace("browser=p.chromium.launch(args=['--no-sandbox'])", "browser=p.chromium.launch(channel='chrome' if shutil.which('google-chrome') else None,args=['--no-sandbox','--autoplay-policy=no-user-gesture-required'])")
           audio_repair = r'''
-          # Keep the original narrator. Remove only an interrupted fragment and its
-          # silent dropout, cutting at silent boundaries, never through a full word.
+          # Preserve the original narrator and all intact speech. Cut the interrupted
+          # Timeline fragment and silence at verified silent boundaries.
           cut_start, cut_end = 73.2, 81.3
           cut_length = cut_end - cut_start
           def timestamp(value):
-              h,m,s=value.split(':')
+              parts=value.split(':')
+              if len(parts)==2:
+                  parts.insert(0,'0')
+              h,m,s=parts
               return int(h)*3600+int(m)*60+float(s)
           def formatted(value):
               ms=round(value*1000)
@@ -59,16 +62,21 @@ jobs:
               s,ms=divmod(ms,1000)
               return f'{h:02d}:{m:02d}:{s:02d}.{ms:03d}'
           adjusted=[]
-          for a,b,text in re.findall(r'(\d{2}:\d{2}:\d{2}\.\d{3}) --> (\d{2}:\d{2}:\d{2}\.\d{3})\n(.*?)(?=\n\n|\Z)',captions,re.S):
+          removed=[]
+          matches=re.findall(r'((?:\d{2}:)?\d{2}:\d{2}\.\d{3}) --> ((?:\d{2}:)?\d{2}:\d{2}\.\d{3})\n(.*?)(?=\n\n|\Z)',captions,re.S)
+          assert len(matches)==32, f'Expected 32 source captions; received {len(matches)}'
+          for a,b,text in matches:
               a,b=timestamp(a),timestamp(b)
               if a>=cut_start and b<=cut_end:
+                  removed.append(text)
                   continue
               assert not (a<cut_start<b) and not (a<cut_end<b), 'Caption straddles edit'
               if a>=cut_end:
                   a-=cut_length
                   b-=cut_length
               adjusted.append(f'{len(adjusted)+1}\n{formatted(a)} --> {formatted(b)}\n{text.strip()}')
-          assert len(adjusted)==31, 'Unexpected caption count'
+          assert len(adjusted)==31 and len(removed)==1, 'Unexpected caption edit'
+          assert 'coordinating activities' in removed[0], 'Wrong caption removed'
           captions='WEBVTT\n\n'+'\n\n'.join(adjusted)+'\n\n'
           (assets/'scccd-tutorial-en.vtt').write_text(captions)
           repaired=work/'narration-repaired.mp4'
@@ -78,6 +86,7 @@ jobs:
           audio_check=subprocess.run(['ffmpeg','-hide_banner','-nostats','-i',str(source),'-map','0:a:0','-af','silencedetect=noise=-45dB:d=4','-f','null','-'],capture_output=True,text=True,check=True)
           assert 'silence_start' not in audio_check.stderr, 'Unexpected long audio dropout'
           (work/'audio-continuity-check.txt').write_text(audio_check.stderr)
+          print('Original narrator retained. Timeline interruption removed. Captions retimed. No silence over 4 seconds.',flush=True)
           '''
           anchor="captions=(assets/'scccd-tutorial-en.vtt').read_text()"
           assert anchor in code
@@ -85,7 +94,6 @@ jobs:
           code=code.replace("wrapper='''", "scenes=[(t-cut_length if t>=cut_end else t,*rest) for t,*rest in scenes]\nwrapper='''",1)
           code=code.replace('Original narration preserved.','Original voice. Continuous narration.')
           code=code.replace("'approved_narration_bit_identical':True", "'repaired_audio_stream_preserved':True,'original_narrator_retained':True,'timeline_dropout_removed':True,'unexpected_silences_over_4_seconds':0")
-          # Document the repaired master and retain the original intact as source.
           Path('.tutorial-render-executed.py').write_text(code)
           exec(compile(code,'scccd-tutorial-production','exec'))
       - name: Publish files to repository
