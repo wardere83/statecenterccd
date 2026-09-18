@@ -1,0 +1,20 @@
+{
+  "video": "SCCCD_EEO_Dashboard_Training_4K.mp4",
+  "resolution": "3840 x 2160",
+  "duration_seconds": 162.722993,
+  "native_dashboard_renders": true,
+  "repaired_audio_stream_preserved": true,
+  "original_narrator_retained": true,
+  "timeline_dropout_removed": true,
+  "unexpected_silences_over_4_seconds": 0,
+  "audio_decode_errors": 0,
+  "budget_scripts_unchanged": true,
+  "logo_subtitle_removed": true,
+  "responsive_logo_max_css_pixels": 150,
+  "tutorial_first_in_navigation": true,
+  "full_page_player_verified": true,
+  "browser_playback_verified": true,
+  "pause_when_leaving_verified": true,
+  "mobile_overflow_test_passed": true,
+  "sha256": "e41764bc1226994c7d6c8ff6a19fe8ad40672167d79b386027375ef20124505c"
+}

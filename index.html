@@ -929,6 +929,7 @@
     .sme-person-role { display:block; font-size:11.5px; color:var(--text-muted); margin-top:1px; }
     @media (max-width:900px) { .sme-frame-wrap { height:clamp(360px, calc(100dvh - 220px), 800px); } }
 </style>
+<style id="scccd-tutorial-polish">.sidebar-logo .cccco-logo-link{width:100%;display:flex!important;justify-content:center;align-items:center}.sidebar-logo .cccco-logo-link img{width:min(100%,150px)!important;max-width:150px!important;height:auto!important;object-fit:contain}.tutorial-nav{align-items:flex-start;line-height:1.45;padding-top:10px;padding-bottom:10px}.tutorial-nav svg{flex:0 0 18px;margin-top:2px}.tutorial-nav span{white-space:normal;overflow-wrap:anywhere}.content:has(#section-tutorial.active){max-width:none}#section-tutorial.active{display:flex;flex-direction:column;width:100%;min-width:0}#section-tutorial .tutorial-card{overflow:hidden;width:100%}#section-tutorial video{display:block;width:100%;height:auto;max-height:calc(100dvh - 240px);min-height:180px;aspect-ratio:16/9;object-fit:contain;background:#062b43}.tutorial-actions{display:flex;gap:18px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:16px 20px}.tutorial-actions span{font-size:13px;line-height:1.6;color:var(--text-secondary)}.tutorial-links{display:flex;gap:10px;flex-wrap:wrap}.tutorial-action{font:600 13px var(--font-body);text-decoration:none;border:1px solid var(--ccc-dark-blue);padding:10px 14px;border-radius:8px;background:var(--ccc-dark-blue);color:white;cursor:pointer}.tutorial-secondary{background:transparent;color:var(--text-primary)}@media(max-width:640px){#section-tutorial video{max-height:none;min-height:0}.tutorial-actions{padding:14px}.tutorial-links{width:100%}.tutorial-action{flex:1;text-align:center}}</style>
 </head>
 <body>
 
@@ -942,13 +943,13 @@
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-logo">
       <a class="cccco-logo-link" href="https://www.scccd.edu" target="_blank" rel="noopener noreferrer" aria-label="State Center Community College District" style="display:block;text-decoration:none;">
-        <img src="sccd-logo.png" alt="State Center Community College District" width="200" height="200" style="display:block;width:100%;max-width:118px;height:auto;margin:0 auto;padding:4px 0;" />
+        <img src="sccd-logo.png" alt="State Center Community College District" width="200" height="200" style="display:block;width:100%;max-width:150px;height:auto;margin:0 auto;padding:4px 0;" />
       </a>
-      <div class="logo-sub">FIT 2.0 &middot; Faculty in Training &middot; EEO IBP</div>
       <div class="logo-attribution">Administered by CCCCO</div>
     </div>
 
     <div class="sidebar-nav-scroll">
+<div class="sidebar-section-label">Dashboard Tutorial</div><button class="nav-item tutorial-nav" data-tutorial-nav="true" onclick="showSection('tutorial',this,true)" aria-controls="section-tutorial"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="m10 8 6 4-6 4z"/></svg><span>SCCCD's PM Dashboard Tutorial Video</span></button>
     <div class="sidebar-section-label" data-i18n="sb_dashboard">Dashboard</div>
     <button class="nav-item active" onclick="showSection('overview',this)" data-i18n="nav_overview">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
@@ -994,8 +995,6 @@
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
       Forms
     </button>
-    <div class="sidebar-section-label">Dashboard Tutorial</div>
-    <button class="nav-item" onclick="showSection('tutorial',this)" aria-controls="section-tutorial"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="m10 8 6 4-6 4z"/></svg><span>SCCCD's PM Dashboard Tutorial Video</span></button>
     </div><!-- /sidebar-nav-scroll -->
     <div class="sidebar-footer">
       <div class="sidebar-footer-label">Administered by</div>
@@ -1667,10 +1666,7 @@
         </div>
       </div>
 
-      <section id="section-tutorial" class="section" aria-labelledby="tutorial-heading">
-        <div class="page-header"><h2 id="tutorial-heading">SCCCD's PM Dashboard Tutorial Video</h2><p>A brief tour of your project management dashboard. Created by Bulle Consulting.</p></div>
-        <div id="tutorial-media" class="card"><div class="card-body"><p>The updated tutorial video will appear here shortly.</p></div></div>
-      </section>
+      <section id="section-tutorial" class="section" aria-labelledby="tutorial-heading"><div class="page-header"><h2 id="tutorial-heading" tabindex="-1">SCCCD's PM Dashboard Tutorial Video</h2><p>A high-level tour of your EEO Dashboard. Created by Bulle Consulting.</p></div><div id="tutorial-media" class="card tutorial-card"><video id="scccd-tutorial-video" controls playsinline preload="metadata" poster="assets/tutorial/scccd-tutorial-poster.jpg" aria-label="SCCCD project management dashboard tutorial"><source src="assets/tutorial/SCCCD_EEO_Dashboard_Training_4K.mp4" type="video/mp4"><track kind="captions" src="assets/tutorial/scccd-tutorial-en.vtt" srclang="en" label="English">Your browser does not support embedded video. Use the download link below.</video><div class="tutorial-actions"><div><strong>Created by Bulle Consulting</strong><br><span>4K Ultra HD. Original voice. Continuous narration.</span></div><div class="tutorial-links"><button type="button" class="tutorial-action" onclick="var v=document.getElementById('scccd-tutorial-video');if(v.requestFullscreen){v.requestFullscreen()}else if(v.webkitEnterFullscreen){v.webkitEnterFullscreen()}">Full Screen</button><a class="tutorial-action" href="assets/tutorial/SCCCD_EEO_Dashboard_Training_4K.mp4" download>Download Video (4K MP4)</a><a class="tutorial-action tutorial-secondary" href="assets/tutorial/scccd-tutorial-transcript.txt" download>Download Transcript</a></div></div></div></section>
 
       <!-- CONTACTS -->
       <div id="section-contacts" class="section">
@@ -5199,5 +5195,6 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 })();
 </script>
+<script id="scccd-tutorial-behavior">document.addEventListener('DOMContentLoaded',function(){var previous=window.showSection;if(typeof previous!=='function')return;window.showSection=function(id,button,mobile){var video=document.getElementById('scccd-tutorial-video');if(id!=='tutorial'&&video)video.pause();previous.apply(this,arguments);if(id==='tutorial'){var area=document.querySelector('.content');if(area)area.scrollTop=0;var heading=document.getElementById('tutorial-heading');if(heading)heading.focus({preventScroll:true});}};});</script>
 </body>
 </html>
