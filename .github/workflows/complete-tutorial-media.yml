@@ -1,0 +1,127 @@
+name: Complete tutorial media
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/complete-tutorial-media.yml'
+permissions:
+  actions: read
+  contents: write
+  pages: write
+  id-token: write
+concurrency:
+  group: scccd-final-media
+  cancel-in-progress: false
+jobs:
+  complete:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prepare encoder and original 4K frames
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg >/tmp/install.log 2>&1 || { tail -30 /tmp/install.log; exit 1; }
+          curl -fsSL --retry 2 -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" https://api.github.com/repos/wardere83/statecenterccd/actions/artifacts/10526379278/zip -o /tmp/scccd-frames.zip
+      - name: Complete media and verify
+        shell: python
+        run: |
+          from pathlib import Path
+          import json,subprocess,zipfile,hashlib,shutil,math
+          root=Path.cwd()
+          work=root/'.media-final'
+          work.mkdir(exist_ok=True)
+          with zipfile.ZipFile('/tmp/scccd-frames.zip') as z:
+              z.extractall(work)
+          assets=root/'assets/tutorial'
+          target=assets/'SCCCD_EEO_Dashboard_Training_4K.mp4'
+          source=work/'source.mp4'
+          shutil.copy2(target,source)
+          def probe(path):
+              return json.loads(subprocess.check_output(['ffprobe','-v','error','-show_streams','-show_format','-of','json',str(path)]))
+          info=probe(source)
+          audio=next(s for s in info['streams'] if s['codec_type']=='audio')
+          duration=float(audio['duration'])
+          starts=[0,23.95,37.65,51.5,67.4,73.7,89.4,102.75,116.8,132.5,139.4,145.95]
+          rows=[]
+          for i,start in enumerate(starts):
+              shot=work/('scene-%02d.png'%i)
+              assert shot.exists()
+              end=starts[i+1] if i+1<len(starts) else duration
+              rows.extend(["file '"+str(shot)+"'",'duration %.8f'%(end-start)])
+          rows.append("file '"+str(work/'scene-11.png')+"'")
+          (work/'frames.txt').write_text('\n'.join(rows)+'\n')
+          end=math.ceil(duration*20)/20
+          subprocess.run(['ffmpeg','-hide_banner','-loglevel','warning','-y','-f','concat','-safe','0','-i',str(work/'frames.txt'),'-i',str(source),'-map','0:v:0','-map','1:a:0','-map','1:s:0','-vf',f'fps=20,tpad=stop_mode=clone:stop_duration=25,trim=duration={end}', '-fps_mode','cfr','-c:v','libx264','-preset','ultrafast','-tune','stillimage','-crf','16','-pix_fmt','yuv420p','-g','600','-threads','4','-c:a','copy','-c:s','copy','-movflags','+faststart','-metadata','title=SCCCD PM Dashboard Tutorial Video','-metadata','artist=Bulle Consulting',str(target)],check=True)
+          final=probe(target)
+          video=next(s for s in final['streams'] if s['codec_type']=='video')
+          final_audio=next(s for s in final['streams'] if s['codec_type']=='audio')
+          assert video['width']==3840 and video['height']==2160
+          assert abs(float(video['duration'])-float(final_audio['duration']))<0.06
+          for name,media in [('before',source),('after',target)]:
+              subprocess.run(['ffmpeg','-v','error','-y','-i',str(media),'-map','0:a:0','-c:a','copy','-f','adts',str(work/(name+'.aac'))],check=True)
+          assert (work/'before.aac').read_bytes()==(work/'after.aac').read_bytes()
+          result=subprocess.run(['ffmpeg','-hide_banner','-nostats','-i',str(target),'-map','0:a:0','-af','silencedetect=noise=-45dB:d=4,astats=metadata=0:reset=0','-f','null','-'],capture_output=True,text=True,check=True)
+          assert 'silence_start' not in result.stderr
+          (assets/'audio-verification.txt').write_text(result.stderr)
+          packet_data=json.loads(subprocess.check_output(['ffprobe','-v','error','-select_streams','a:0','-show_entries','packet=pts_time,duration_time','-of','json',str(target)]))['packets']
+          for a,b in zip(packet_data,packet_data[1:]):
+              assert abs(float(b['pts_time'])-float(a['pts_time'])-float(a['duration_time']))<0.002
+          report=json.loads((assets/'quality-verification.json').read_text())
+          report.update({'duration_seconds':float(final['format']['duration']),'video_duration_seconds':float(video['duration']),'audio_duration_seconds':float(final_audio['duration']),'video_covers_complete_narration':True,'audio_timestamp_discontinuities':0,'sha256':hashlib.sha256(target.read_bytes()).hexdigest()})
+          (assets/'quality-verification.json').write_text(json.dumps(report,indent=2)+'\n')
+          page=root/'index.html'
+          page.write_text(page.read_text().replace('assets/tutorial/SCCCD_EEO_Dashboard_Training_4K.mp4"','assets/tutorial/SCCCD_EEO_Dashboard_Training_4K.mp4?v='+report['sha256'][:12]+'"'))
+          publish=root/'.tutorial-publish'
+          publish.mkdir(exist_ok=True)
+          for name in ['index.html','sccd-logo.png','Bulle Cloud Logo-white.png']:
+              shutil.copy2(root/name,publish/name)
+          shutil.copytree(assets,publish/'assets/tutorial',dirs_exist_ok=True)
+          print(json.dumps(report,indent=2))
+      - name: Commit completed media
+        run: |
+          git config user.name "Bulle Consulting"
+          git config user.email "137476259+wardere83@users.noreply.github.com"
+          git add index.html assets/tutorial
+          git diff --cached --quiet || git commit -m "Finalize continuous 4K tutorial with synchronized closing and verified audio"
+          git push origin HEAD:main
+      - uses: actions/upload-artifact@v4
+        with:
+          name: SCCCD-Final-4K-Tutorial-and-Dashboard
+          path: .tutorial-publish/
+          include-hidden-files: true
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: .tutorial-publish/
+      - name: Deploy completed dashboard
+        id: deployment
+        uses: actions/deploy-pages@v4
+      - name: Verify public video and page
+        shell: python
+        run: |
+          import urllib.request,time,json,hashlib
+          from pathlib import Path
+          base='https://wardere83.github.io/statecenterccd/'
+          expected=json.loads(Path('assets/tutorial/quality-verification.json').read_text())
+          for attempt in range(12):
+              try:
+                  with urllib.request.urlopen(base+'assets/tutorial/quality-verification.json?v='+str(time.time()),timeout=20) as response:
+                      live=json.load(response)
+                  assert live['sha256']==expected['sha256']
+                  with urllib.request.urlopen(base+'?v='+str(time.time()),timeout=20) as response:
+                      page=response.read().decode()
+                  assert 'data-tutorial-nav="true"' in page and 'Original voice. Continuous narration.' in page
+                  assert '<div class="logo-sub">FIT 2.0' not in page
+                  with urllib.request.urlopen(base+'assets/tutorial/SCCCD_EEO_Dashboard_Training_4K.mp4?v='+expected['sha256'][:12],timeout=60) as response:
+                      digest=hashlib.sha256(response.read()).hexdigest()
+                  assert digest==expected['sha256']
+                  print('VERIFIED LIVE: updated page, complete 4K video, and matching media checksum.')
+                  break
+              except Exception:
+                  if attempt==11: raise
+                  time.sleep(10)
