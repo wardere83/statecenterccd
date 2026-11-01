@@ -20,7 +20,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script>window.Chart || document.write('<script src="vendor/chart.umd.js"><\/script>');</script>
   <script src="https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js"></script>
+  <script>window.html2pdf || document.write('<script src="vendor/html2pdf.bundle.min.js"><\/script>');</script>
   <style>
     /* ════════════ APPLE-INSPIRED POLISH ON CCCCO PALETTE ════════════
        Clean typography, generous whitespace, subtle layered shadows,
@@ -3227,8 +3229,10 @@ const BMR_SEED = {
     district: 'State Center Community College District',
     submittedBy: 'Nickolas Trujillo · Project Lead',
     email: 'nickolas.trujillo@scccd.edu',
-    date: '2026-06-30',
-    approvedBy: 'CCCCO Staff'
+    // Left blank: the district sets the date when it actually submits, and
+    // only CCCCO staff fill in Approved by once a request is approved.
+    date: '',
+    approvedBy: ''
   },
   years: {
     y1: { rows: {
@@ -3260,6 +3264,10 @@ function seedBmrIfEmpty() {
     const state = JSON.parse(raw) || {};
     state.meta = state.meta || {};
     let changed = false;
+    // Clear the placeholder date and approval that earlier versions pre-filled,
+    // so an unsubmitted draft never reads as dated or approved.
+    if (state.meta.date === '2026-06-30') { state.meta.date = ''; changed = true; }
+    if (state.meta.approvedBy === 'CCCCO Staff') { state.meta.approvedBy = ''; changed = true; }
     ['district','submittedBy','email','date','approvedBy'].forEach(k => {
       if (!state.meta[k] && BMR_SEED.meta[k]) { state.meta[k] = BMR_SEED.meta[k]; changed = true; }
     });
@@ -4194,7 +4202,7 @@ function bmrvBuildScenes() {
     /* ── Section 1 · Contact header (matches the form's top meta grid, in order) ── */
     { t:'mv-district', cap:'Section 1 — Contact information. Start by entering your Community College District name.', text:dist },
     { t:'mv-by',    cap:'Enter the name and designated grant role of the person submitting this request.', text:'Dr. Jane Smith, Project Lead' },
-    { t:'mv-email', cap:'Add your email address so the Chancellor\'s Office can follow up if needed.', text:'nickolas.trujillo@scccd.edu' },
+    { t:'mv-email', cap:'Add your email address so the Chancellor\'s Office can follow up if needed.', text:'jsmith@scccd.edu' },
     { t:'mv-date',  cap:'Set today\'s submission date.', text:'2026-09-30' },
     /* ── Section 2 · Year 1 expenditure line — columns left to right: Expenditure Type, Description, Proposed Funds, Actuals, Fund Balance, Projections, Expenditure Updates ── */
     { t:'mv-t1', cap:'Section 2 — Year 1 changes. First, find the Expenditure Type: the budget category from your original grant submission that you are modifying.', kind:'show', text:'' },
@@ -4867,7 +4875,7 @@ function renderSpendDown() {
   const kpiRow = document.getElementById('spend-kpi-row');
   if (kpiRow) {
     kpiRow.innerHTML =
-      '<div class="kpi-card"><div class="kpi-accent-bar blue"></div><div class="kpi-label">' + t('kpi_total_grant_label') + '</div><div class="kpi-value blue">' + fmt(totalGrant) + '</div><div class="kpi-sub">Tier 1 award</div></div>' +
+      '<div class="kpi-card"><div class="kpi-accent-bar blue"></div><div class="kpi-label">' + t('kpi_total_grant_label') + '</div><div class="kpi-value blue">' + fmt(totalGrant) + '</div><div class="kpi-sub">Tier 2 award</div></div>' +
       '<div class="kpi-card"><div class="kpi-accent-bar medium-blue"></div><div class="kpi-label">' + t('kpi_y1_budget_label') + '</div><div class="kpi-value medium-blue">' + fmt(y1) + '</div><div class="kpi-sub">Jan 2026 – Jun 2027</div></div>' +
       '<div class="kpi-card"><div class="kpi-accent-bar gold"></div><div class="kpi-label">' + t('kpi_y2_budget_label') + '</div><div class="kpi-value gold">' + fmt(y2) + '</div><div class="kpi-sub">Jul 2027 – Jun 2028</div></div>' +
       '<div class="kpi-card"><div class="kpi-accent-bar medium-blue"></div><div class="kpi-label">Y1 Fund Balance</div><div class="kpi-value medium-blue">' + fmt(fundBalanceTotal('y1')) + '</div><div class="kpi-sub">Entered by district (BMR)</div></div>' +
