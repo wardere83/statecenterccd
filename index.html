@@ -4790,7 +4790,7 @@ function initCharts() {
   if (tc) chartInstances.tier = new Chart(tc, {
     type:'doughnut',
     data:{ labels:['FY 2025–26','FY 2026–27','FY 2027–28'],
-      datasets:[{ data:[20000,40000,40000], backgroundColor:[C.darkBlue,C.medBlue,C.gold], borderColor:isDark?'#131D35':'#fff', borderWidth:3, hoverOffset:6 }] },
+      datasets:[{ data:[19879,66347,63774], backgroundColor:[C.darkBlue,C.medBlue,C.gold], borderColor:isDark?'#131D35':'#fff', borderWidth:3, hoverOffset:6 }] },
     options:{ ...baseOpts, cutout:'65%',
       plugins:{ ...baseOpts.plugins, tooltip:{ callbacks:{ label:ctx => ' ' + ctx.label + ': $' + ctx.raw.toLocaleString() } } } }
   });
@@ -4798,9 +4798,9 @@ function initCharts() {
   const fc = document.getElementById('focusChart');
   if (fc) chartInstances.focus = new Chart(fc, {
     type:'bar',
-    data:{ labels:['1000 · Instr. Salaries','2000 · Non-Instr. Salaries','3000 · Benefits','4000 · Supplies','5000 · Operating','7000 · Indirect (5%)'],
-      datasets:[{ data:[9000,54340,1060,4600,26000,5000],
-        backgroundColor:[C.darkBlue,C.medBlue,C.lightBlue,C.darkBlue+'cc',C.gold,C.darkGold],
+    data:{ labels:['1000 · Instr. Salaries','3000 · Benefits','4000 · Supplies','5000 · Operating','7000 · Indirect (5%)'],
+      datasets:[{ data:[107964,20818,3275,10800,7143],
+        backgroundColor:[C.darkBlue,C.lightBlue,C.darkBlue+'cc',C.gold,C.darkGold],
         borderRadius:4, borderSkipped:false }] },
     options:{ ...baseOpts, indexAxis:'y',
       plugins:{ ...baseOpts.plugins, legend:{display:false}, tooltip:{ callbacks:{ label:ctx => ' $' + ctx.raw.toLocaleString() } } },
