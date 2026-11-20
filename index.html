@@ -2150,6 +2150,7 @@ const translations = {
     lift_title:'Program Spotlight — FIT 2.0: Faculty in Training Pre-Hiring Pipeline',
     lift_desc:'State Center CCD’s Faculty in Training (FIT) Program is a pre-hiring intervention that recruits, develops, and prepares diverse future faculty across the District’s four colleges — Fresno City, Reedley, Clovis, and Madera. Interns complete a mentored two-semester experience — observation and DEIA-aligned pedagogy, then supervised teaching — supported by faculty mentors, MSI and CTE outreach, and participation stipends. Building on a 2022 pilot, FIT 2.0 institutionalizes the program districtwide to widen access, readiness, and representation in full-time faculty hiring.',
     chart_tier_dist:'Budget by Fiscal Year', chart_total_dist:'Three-year cycle',
+    spend_award_tier:'Tier 1 award',
     chart_focus_areas:'Budget by Object Code', chart_by_type:'Share of $150K award',
     table_district_summary:'Project Summary',
     th_district:'District', th_tier:'Tier', th_funding:'Funding', th_y1:'Year 1', th_y2:'Year 2', th_focus:'Primary Focus', th_total:'Total',
@@ -2259,7 +2260,11 @@ const translations = {
     kpi_lift:'Áreas de Enfoque', kpi_focus:'Áreas de Enfoque', kpi_focus_sub:'Cantera · Mentoría · Difusión · Datos',
     lift_title:'Enfoque del Programa — FIT 2.0: Cantera de Profesorado en Formación Previa a la Contratación',
     lift_desc:'El Programa de Profesorado en Formación (FIT) de State Center CCD es una intervención previa a la contratación que recluta, desarrolla y prepara a un profesorado futuro diverso en los cuatro colegios del Distrito — Fresno City, Reedley, Clovis y Madera. Los internos completan una experiencia de dos semestres con mentoría — observación y pedagogía alineada con DEIA, seguida de enseñanza supervisada — con el apoyo de mentores docentes, difusión hacia MSI y CTE, y estipendios de participación. A partir de un piloto de 2022, FIT 2.0 institucionaliza el programa en todo el distrito para ampliar el acceso, la preparación y la representación en la contratación de profesorado a tiempo completo.',
-    chart_tier_dist:'Asignación por Nivel', chart_total_dist:'Distribución Total',
+    chart_tier_dist:'Presupuesto por Año Fiscal', chart_total_dist:'Ciclo de tres años',
+    kpi_dr_target:'Meta de Contratación de Pasantes', kpi_dr_target_sub:'Egresados de FIT contratados en 2 años', kpi_mentor_target:'Colegios Atendidos', kpi_mentor_target_sub:'Fresno City · Reedley · Clovis · Madera',
+    th_period:'Período', th_period_budget:'Presupuesto del Período', goals_title:'Metas y Objetivos',
+    goals_sub:'Los ocho objetivos del plan de trabajo de SCCCD (Sección 2.1), agrupados en tres metas principales — cada una con sus actividades, resultados medibles y plan de evaluación.',
+    spend_award_tier:'Subvención de Nivel 1',
     chart_focus_areas:'Áreas de Enfoque del Programa', chart_by_type:'Por Tipo de Iniciativa',
     table_district_summary:'Resumen de Distritos',
     th_district:'Distrito', th_tier:'Nivel', th_funding:'Financiamiento', th_y1:'Año 1', th_y2:'Año 2', th_focus:'Enfoque Principal', th_total:'Total',
@@ -2356,7 +2361,11 @@ const translations = {
     kpi_lift:'Trọng Tâm', kpi_focus:'Trọng Tâm', kpi_focus_sub:'Nguồn nhân lực · Cố vấn · Tiếp cận · Dữ liệu',
     lift_title:'Tiêu điểm Chương trình — FIT 2.0: Nguồn Giảng viên Tập sự Trước Tuyển dụng',
     lift_desc:'Chương trình Giảng viên Tập sự (FIT) của State Center CCD là một can thiệp trước tuyển dụng nhằm tuyển chọn, phát triển và chuẩn bị đội ngũ giảng viên tương lai đa dạng trên bốn trường của Học khu — Fresno City, Reedley, Clovis và Madera. Các thực tập sinh hoàn thành trải nghiệm hai học kỳ có cố vấn — quan sát và phương pháp giảng dạy phù hợp với DEIA, sau đó là giảng dạy có giám sát — với sự hỗ trợ của các giảng viên cố vấn, hoạt động tiếp cận MSI và CTE, cùng trợ cấp tham gia. Dựa trên chương trình thí điểm năm 2022, FIT 2.0 thể chế hóa chương trình trên toàn học khu nhằm mở rộng khả năng tiếp cận, sự sẵn sàng và tính đại diện trong việc tuyển dụng giảng viên toàn thời gian.',
-    chart_tier_dist:'Phân bổ theo cấp', chart_total_dist:'Tổng phân phối',
+    chart_tier_dist:'Ngân sách theo năm tài chính', chart_total_dist:'Chu kỳ ba năm',
+    kpi_dr_target:'Mục tiêu tuyển dụng thực tập sinh', kpi_dr_target_sub:'Học viên FIT tốt nghiệp được tuyển dụng trong 2 năm', kpi_mentor_target:'Các trường được phục vụ', kpi_mentor_target_sub:'Fresno City · Reedley · Clovis · Madera',
+    th_period:'Giai đoạn', th_period_budget:'Ngân sách giai đoạn', goals_title:'Mục tiêu & Đối tượng',
+    goals_sub:'Tám mục tiêu trong kế hoạch công việc của SCCCD (Mục 2.1), được nhóm thành ba mục tiêu cốt lõi — mỗi mục tiêu đều có các hoạt động, kết quả đo lường được và kế hoạch đánh giá.',
+    spend_award_tier:'Tài trợ Cấp 1',
     chart_focus_areas:'Lĩnh vực trọng tâm', chart_by_type:'Theo loại sáng kiến',
     table_district_summary:'Tóm tắt quận',
     th_district:'Quận', th_tier:'Cấp', th_funding:'Tài trợ', th_y1:'Năm 1', th_y2:'Năm 2', th_focus:'Trọng tâm chính', th_total:'Tổng',
@@ -2473,8 +2482,10 @@ const translations = {
     kpi_focus_sub:'Հոսք · Մենթորություն · Իրազեկում · Տվյալներ',
     lift_title:'Ծրագրի ուշադրության կենտրոնում — FIT 2.0. Վերապատրաստվող դասախոսների նախաընդունական հոսք',
     lift_desc:'State Center CCD-ի Վերապատրաստվող դասախոսների (FIT) ծրագիրը նախաընդունական միջամտություն է, որը հավաքագրում, զարգացնում և պատրաստում է բազմազան ապագա դասախոսների Շրջանի չորս քոլեջներում՝ Fresno City, Reedley, Clovis և Madera: Ինտերնները անցնում են մենթորությամբ ուղեկցվող երկու կիսամյակ տևողությամբ փորձառություն՝ դիտարկում և DEIA-ին համահունչ մանկավարժություն, ապա վերահսկվող դասավանդում՝ դասախոս-մենթորների, MSI և CTE իրազեկման ու մասնակցության կրթաթոշակների աջակցությամբ: Հիմնվելով 2022 թվականի փորձնական ծրագրի վրա՝ FIT 2.0-ն ինստիտուցիոնալացնում է ծրագիրը ողջ շրջանում՝ ընդլայնելու հասանելիությունը, պատրաստվածությունը և ներկայացվածությունը լրիվ դրույքով դասախոսների աշխատանքի ընդունման գործում:',
-    chart_tier_dist:'Ֆոնդերի բաշխում ըստ մակարդակների',
-    chart_total_dist:'Ընդհանուր բաշխում',
+    chart_tier_dist:'Բյուջեն ըստ ֆինանսական տարիների',
+    chart_total_dist:'Եռամյա ցիկլ',
+    outcomes_sub:'Չափելի արդյունքներ և թիրախներ յուրաքանչյուր շրջանի առաջարկից',
+    spend_award_tier:'1-ին մակարդակի մրցանակ',
     chart_focus_areas:'Ծրագրի ուշադրության տարածքներ',
     chart_by_type:'Ըստ նախաձեռնության տեսակի',
     table_district_summary:'Ծրագրի ամփոփում',
@@ -2637,8 +2648,10 @@ const translations = {
     kpi_focus_sub:'파이프라인 · 멘토링 · 아웃리치 · 데이터',
     lift_title:'프로그램 스포트라이트 — FIT 2.0: 교수진 양성 사전 채용 파이프라인',
     lift_desc:'State Center CCD의 교수진 양성(FIT) 프로그램은 학군 내 네 개 대학 — Fresno City, Reedley, Clovis, Madera — 전역에서 다양한 미래 교수진을 모집, 육성, 준비시키는 사전 채용 프로그램입니다. 인턴은 멘토링이 제공되는 두 학기 과정 — 관찰과 DEIA에 부합하는 교수법, 이어서 지도 감독하의 강의 — 을 이수하며, 교수 멘토, MSI 및 CTE 아웃리치, 참여 장학금의 지원을 받습니다. 2022년 시범 사업을 토대로, FIT 2.0은 이 프로그램을 학군 전역에 제도화하여 전임 교수진 채용에서 접근성, 준비도, 대표성을 확대합니다.',
-    chart_tier_dist:'계층별 자금 할당',
-    chart_total_dist:'총 분배',
+    chart_tier_dist:'회계연도별 예산',
+    chart_total_dist:'3년 주기',
+    outcomes_sub:'각 지구 제안서의 측정 가능한 산출물 및 목표',
+    spend_award_tier:'1등급 보조금',
     chart_focus_areas:'프로그램 중점 분야',
     chart_by_type:'이니셔티브 유형별',
     table_district_summary:'프로젝트 요약',
@@ -2782,7 +2795,11 @@ const translations = {
     kpi_lift:'重點領域', kpi_focus:'重點領域', kpi_focus_sub:'人才管道 · 師友指導 · 外展 · 數據',
     lift_title:'計畫焦點 — FIT 2.0：師資培訓聘用前人才管道',
     lift_desc:'State Center CCD 的師資培訓（FIT）計畫是一項聘用前介入措施，招募、培育並培養學區四所大學 — Fresno City、Reedley、Clovis 與 Madera — 多元的未來教職員。實習學員完成為期兩學期、有導師指導的歷程 — 觀摩與符合 DEIA 的教學法，接著是受督導的授課 — 並獲得教職導師、MSI 與 CTE 外展以及參與津貼的支持。在 2022 年試辦計畫的基礎上，FIT 2.0 將此計畫在全學區制度化，以擴大全職教職員聘用的機會、準備度與代表性。',
-    chart_tier_dist:'按等級的資金分配', chart_total_dist:'總分配',
+    chart_tier_dist:'各會計年度預算', chart_total_dist:'三年週期',
+    kpi_dr_target:'實習生聘用目標', kpi_dr_target_sub:'FIT 結業生於 2 年內獲聘', kpi_mentor_target:'服務學院', kpi_mentor_target_sub:'Fresno City · Reedley · Clovis · Madera',
+    th_period:'期間', th_period_budget:'期間預算', goals_title:'目標與宗旨', filter_combined:'合併檢視', filter_y1:'第 1 年', filter_y2:'第 2 年',
+    goals_sub:'SCCCD 工作計畫的八項目標(第 2.1 節),歸納為三大核心目標 — 各自包含活動、可衡量的成果及評估計畫。',
+    spend_award_tier:'第 1 級補助金',
     chart_focus_areas:'計畫重點領域', chart_by_type:'按計畫類型',
     table_district_summary:'學區摘要',
     th_district:'學區', th_tier:'等級', th_funding:'資金', th_y1:'第 1 年', th_y2:'第 2 年', th_focus:'主要重點', th_total:'總計',
@@ -3229,8 +3246,10 @@ const BMR_SEED = {
     district: 'State Center Community College District',
     submittedBy: 'Nickolas Trujillo · Project Lead',
     email: 'nickolas.trujillo@scccd.edu',
-    date: '2026-06-30',
-    approvedBy: 'CCCCO Staff'
+    // Left blank: the district sets the date when it actually submits, and
+    // only CCCCO staff fill in Approved by once a request is approved.
+    date: '',
+    approvedBy: ''
   },
   years: {
     y1: { rows: {
@@ -3262,6 +3281,10 @@ function seedBmrIfEmpty() {
     const state = JSON.parse(raw) || {};
     state.meta = state.meta || {};
     let changed = false;
+    // Clear the placeholder date and approval that earlier versions pre-filled,
+    // so an unsubmitted draft never reads as dated or approved.
+    if (state.meta.date === '2026-06-30') { state.meta.date = ''; changed = true; }
+    if (state.meta.approvedBy === 'CCCCO Staff') { state.meta.approvedBy = ''; changed = true; }
     ['district','submittedBy','email','date','approvedBy'].forEach(k => {
       if (!state.meta[k] && BMR_SEED.meta[k]) { state.meta[k] = BMR_SEED.meta[k]; changed = true; }
     });
@@ -4377,7 +4400,7 @@ function bmrvBuildScenes() {
     /* ── Section 1 · Contact header (matches the form's top meta grid, in order) ── */
     { t:'mv-district', cap:'Section 1 — Contact information. Start by entering your Community College District name.', text:dist },
     { t:'mv-by',    cap:'Enter the name and designated grant role of the person submitting this request.', text:'Dr. Jane Smith, Project Lead' },
-    { t:'mv-email', cap:'Add your email address so the Chancellor\'s Office can follow up if needed.', text:'nickolas.trujillo@scccd.edu' },
+    { t:'mv-email', cap:'Add your email address so the Chancellor\'s Office can follow up if needed.', text:'jsmith@district.edu' },
     { t:'mv-date',  cap:'Set today\'s submission date.', text:'2026-09-30' },
     /* ── Section 2 · Year 1 expenditure line — columns left to right: Expenditure Type, Description, Proposed Funds, Actuals, Fund Balance, Projections, Expenditure Updates ── */
     { t:'mv-t1', cap:'Section 2 — Year 1 changes. First, find the Expenditure Type: the budget category from your original grant submission that you are modifying.', kind:'show', text:'' },
@@ -5050,7 +5073,7 @@ function renderSpendDown() {
   const kpiRow = document.getElementById('spend-kpi-row');
   if (kpiRow) {
     kpiRow.innerHTML =
-      '<div class="kpi-card"><div class="kpi-accent-bar blue"></div><div class="kpi-label">' + t('kpi_total_grant_label') + '</div><div class="kpi-value blue">' + fmt(totalGrant) + '</div><div class="kpi-sub">Tier 1 award</div></div>' +
+      '<div class="kpi-card"><div class="kpi-accent-bar blue"></div><div class="kpi-label">' + t('kpi_total_grant_label') + '</div><div class="kpi-value blue">' + fmt(totalGrant) + '</div><div class="kpi-sub">' + t('spend_award_tier') + '</div></div>' +
       '<div class="kpi-card"><div class="kpi-accent-bar medium-blue"></div><div class="kpi-label">' + t('kpi_y1_budget_label') + '</div><div class="kpi-value medium-blue">' + fmt(y1) + '</div><div class="kpi-sub">Jan 2026 – Jun 2027</div></div>' +
       '<div class="kpi-card"><div class="kpi-accent-bar gold"></div><div class="kpi-label">' + t('kpi_y2_budget_label') + '</div><div class="kpi-value gold">' + fmt(y2) + '</div><div class="kpi-sub">Jul 2027 – Jun 2028</div></div>' +
       '<div class="kpi-card"><div class="kpi-accent-bar medium-blue"></div><div class="kpi-label">Y1 Fund Balance</div><div class="kpi-value medium-blue">' + fmt(fundBalanceTotal('y1')) + '</div><div class="kpi-sub">Entered by district (BMR)</div></div>' +
